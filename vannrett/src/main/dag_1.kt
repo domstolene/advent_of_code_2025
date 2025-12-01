@@ -1,7 +1,5 @@
-import java.io.File
+package main
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main() {
     var value = 50
     var numZeroes = 0
@@ -26,20 +24,27 @@ fun main() {
     assert(dial(value, "R14") == 14)
     value = dial(value, "R14")
     assert(dial(value, "L82") == 32)
-    value = dial(value, "R14")
 
     value = 50
-//    listOf<String>("L68", "L30", "R48", "L5", "R60", "L55", "L1", "L99", "R14", "L82")
-
-    File("/Users/Jakob.Lien/Downloads/input.txt").readLines().forEach {
-        println(it)
-        value = dial(value, it)
-        if (value == 0) {
-            numZeroes++
+    readInputFile("/input_dag_1.txt")
+        .lines()
+        .forEach {
+            value = dial(value, it)
+            if (value == 0) {
+                numZeroes++
+            }
         }
-    }
 
     println(numZeroes)
+}
+
+fun readInputFile(filename: String): String {
+    val resource = object {}.javaClass
+        .getResource(filename)
+
+    require(resource != null) { "File not found: $filename" }
+
+    return resource.readText().trim()
 }
 
 fun dial(value: Int, op: String): Int {
