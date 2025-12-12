@@ -14,15 +14,29 @@ fun testdata(): String = "..@@.@@@@.\n" +
 fun main() {
     val lines = data()
 
-
-    // println(lines)
-    val parsedData = parseData(lines)
-    for (rad in 0..parsedData.lastIndex) {
-        for (j in 0..parsedData[0].lastIndex) {
-            val num = numberOfAdjacentRolls(parsedData, rad, j)
-            println(parsedData[rad][j])
+    var totalNumRolls = 0
+    var previousNumRolls = 99
+    var rollGrid = parseData(lines)
+    while (previousNumRolls > 0) {
+        previousNumRolls = 0
+        // println(lines)
+        for (rad in 0..rollGrid.lastIndex) {
+            for (kolonne in 0..rollGrid[0].lastIndex) {
+                val num = numberOfAdjacentRolls(rollGrid, rad, kolonne)
+                val isOnARoll = rollGrid[kolonne][rad]
+                if (isOnARoll && num < 4) {
+                    previousNumRolls++
+                    println("x: $kolonne, y: $rad -> $num")
+                    // Oppdater matrise
+                    rollGrid[kolonne][rad] = false
+                }
+//            println(parsedData[rad][kolonne])
+            }
         }
+        println(previousNumRolls)
+        totalNumRolls += previousNumRolls
     }
+    println(totalNumRolls)
 }
 
 private fun numberOfAdjacentRolls(coordinates: List<List<Boolean>>, i: Int, j: Int): Int {
@@ -36,7 +50,7 @@ private fun numberOfAdjacentRolls(coordinates: List<List<Boolean>>, i: Int, j: I
                 neighbours++
             }
         } catch (e: IndexOutOfBoundsException) {
-            println("Out of bounds: ($x, $y)")
+//            println("Out of bounds: ($x, $y)")
         }
     }
     return neighbours
@@ -44,14 +58,13 @@ private fun numberOfAdjacentRolls(coordinates: List<List<Boolean>>, i: Int, j: I
 
 private fun data(): List<String> {
     val testlines = testdata().split("\n").filter { it.isNotEmpty() }
-    readInputFile("/input_dag_4.txt").split("\n")
-    return testlines
+    return readInputFile("/inputdag4.txt").split("\n")
+//    return testlines
 }
 
-
-private fun parseData(lines: List<String>): List<List<Boolean>> {
+private fun parseData(lines: List<String>): MutableList<MutableList<Boolean>> {
     return lines.map {
-        it.map { it == '@' }
+        it.map { it == '@' }.toMutableList()
         /*
         it.chars().map {
             when (it) {
@@ -59,15 +72,5 @@ private fun parseData(lines: List<String>): List<List<Boolean>> {
             }
         }
          */
-    }
-}
-
-
-private fun readInputFile(filename: String): String {
-    val resource = object {}.javaClass
-        .getResource(filename)
-
-    require(resource != null) { "File not found: $filename" }
-
-    return resource.readText().trim()
+    }.toMutableList()
 }
